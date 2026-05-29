@@ -37,6 +37,12 @@ In Power BI Desktop: **Modeling → New Parameter**
 
 ### Step 3: DAX Calculated Table — Constant Payment
 
+> **Note:** The closed-form DAX formulas below are valid for **End of Period** payments only.
+> For **Begin of Period** (annuity-due) schedules, DAX calculated tables cannot easily handle
+> the iterative balance logic (period 1 has Interest=0, and subsequent balances follow a
+> different trajectory). Use the Python Script data source with `loan_amortization_dax.py`
+> for begin-of-period schedules — it correctly handles both payment types.
+
 ```dax
 AmortSchedule =
 VAR _loan = SELECTEDVALUE('LoanAmount'[LoanAmount], 100000)
@@ -47,10 +53,7 @@ VAR _type = SELECTEDVALUE('PaymentType'[Type], "End of Period")
 VAR _ppy = IF(_freq = "Monthly", 12, 1)
 VAR _r = _rate / _ppy
 VAR _n = _years * _ppy
-VAR _pmt = IF(_type = "End of Period",
-    _loan * _r * POWER(1+_r, _n) / (POWER(1+_r, _n) - 1),
-    _loan * _r * POWER(1+_r, _n) / (POWER(1+_r, _n) - 1) / (1+_r)
-)
+VAR _pmt = _loan * _r * POWER(1+_r, _n) / (POWER(1+_r, _n) - 1)
 RETURN
 ADDCOLUMNS(
     GENERATESERIES(1, _n, 1),

@@ -25,6 +25,8 @@ df = pd.DataFrame({
     "RiskFree": np.round(rf_prices, 4),
 })
 
-df.to_csv("project/after/sample_portfolio_data.csv", index=False)
+import os
+script_dir = os.path.dirname(os.path.abspath(__file__))
+df.to_csv(os.path.join(script_dir, "sample_portfolio_data.csv"), index=False)
 print(f"Generated {len(df)} rows of sample portfolio data")
 print(df.head(10))
