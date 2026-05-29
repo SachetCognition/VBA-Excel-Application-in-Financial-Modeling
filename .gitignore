@@ -1,0 +1,5 @@
+project/before/__pycache__/
+project/tests/__pycache__/
+project/after/__pycache__/
+.pytest_cache/
+__pycache__/
