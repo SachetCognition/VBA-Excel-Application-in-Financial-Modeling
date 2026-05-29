@@ -63,7 +63,8 @@ def sharpe_ratio(asset1_prices, asset2_prices, w1, rf_prices, flag=False):
     """
     Sharpe ratio matching VBA sharpe_ratio UDF.
     Uses annualized rf from log returns of risk-free prices.
-    Denominator uses sqrt(variance) * sqrt(12) matching VBA line 72.
+    portfolio_variance() already returns annualized variance (var * 12),
+    so the annualized std is simply sqrt(annualized_var).
     """
     if flag:
         rf_ret = np.log(np.asarray(rf_prices[:-1], dtype=float) /
@@ -75,7 +76,7 @@ def sharpe_ratio(asset1_prices, asset2_prices, w1, rf_prices, flag=False):
     rf = np.mean(rf_ret) * 12
     port_mean = portfolio_mean_return(asset1_prices, asset2_prices, w1, flag)
     port_var = portfolio_variance(asset1_prices, asset2_prices, w1, flag)
-    port_std = np.sqrt(port_var) * np.sqrt(12)
+    port_std = np.sqrt(port_var)
 
     return (port_mean - rf) / port_std
 
