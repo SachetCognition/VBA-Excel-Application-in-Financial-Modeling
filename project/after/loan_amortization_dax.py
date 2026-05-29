@@ -35,6 +35,7 @@ def dax_amortization_constant(loan, annual_rate_pct, years,
     pmt = -npf.pmt(r, n, loan, 0, pmt_type)
 
     rows = []
+    beg_bal = loan
     for i in range(1, n + 1):
         if pmt_type == 0:
             # End of period: closed-form
@@ -43,15 +44,12 @@ def dax_amortization_constant(loan, annual_rate_pct, years,
             principal = pmt - interest
             end_bal = beg_bal - principal
         else:
-            # Begin of period
+            # Begin of period: iterative (matching VBA lines 177-188)
             if i == 1:
-                beg_bal = loan
                 interest = 0
                 principal = pmt
                 end_bal = beg_bal - principal
             else:
-                beg_bal = loan - pmt * (1 + (1 - pow(1 + r, -(n - (i - 1)))) / r - 1)
-                # Iterative fallback for begin-of-period
                 interest = beg_bal * r
                 principal = pmt - interest
                 end_bal = beg_bal - principal
@@ -64,6 +62,7 @@ def dax_amortization_constant(loan, annual_rate_pct, years,
             "Principal": round(principal, 2),
             "EndBal": round(end_bal, 2),
         })
+        beg_bal = end_bal
 
     return pd.DataFrame(rows)
 
